@@ -51,6 +51,10 @@ RUN yum install -y centos-release-scl && \
     rpm -V $INSTALL_PKGS && \
     yum clean all -y
 
+RUN yum install -y epel-release gcc-c++ make && \
+    yum install -y nodejs && \
+    yum install -y npm
+
 ENV PHP_CONTAINER_SCRIPTS_PATH=/usr/share/container-scripts/php/ \
     APP_DATA=${APP_ROOT}/src \
     PHP_DEFAULT_INCLUDE_PATH=/opt/rh/rh-php71/root/usr/share/pear \
@@ -70,6 +74,9 @@ COPY ./s2i/bin/ $STI_SCRIPTS_PATH
 
 # Copy extra files to the image.
 COPY ./root/ /
+
+RUN npm install && \
+    npm run-script build
 
 # Reset permissions of filesystem to default values
 RUN /usr/libexec/container-setup && rpm-file-permissions
